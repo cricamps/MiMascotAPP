@@ -31,6 +31,10 @@ const routes: Routes = [
     path: 'configuraciones',
     loadChildren: () => import('./configuraciones/configuraciones.module').then( m => m.ConfiguracionesPageModule)
   },
+  {
+    path: 'agregarmascota',
+    loadChildren: () => import('./agregar-mascota/agregar-mascota.module').then( m => m.AgregarMascotaPageModule)
+  },
 ];
 
 @NgModule({
