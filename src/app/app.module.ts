@@ -10,6 +10,8 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { SQLite } from '@ionic-native/sqlite/ngx';
+import { IonicStorageModule } from '@ionic/storage-angular';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -21,6 +23,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
+    IonicStorageModule.forRoot(),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -30,6 +33,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     })
   ],
   providers: [
+    SQLite,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideHttpClient()
   ],
