@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/inicio"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ 'settings' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ 'settings' | translate }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-label>{{ 'notifications' | translate }}</ion-label>
+          <ion-toggle slot="end"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label>{{ 'language' | translate }}</ion-label>
+          <ion-select (ionChange)="changeLanguage($event.detail.value)">
+            <ion-select-option value="es">{{ 'spanish' | translate }}</ion-select-option>
+            <ion-select-option value="en">{{ 'english' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

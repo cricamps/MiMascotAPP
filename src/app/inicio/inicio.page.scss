@@ -1,0 +1,6 @@
+.animated-list {
+    opacity: 0; /* Comienza invisible */
+    transform: translateX(-100px); /* Comienza fuera de la pantalla */
+    transition: all 1s ease-in-out; /* Transición suave */
+  }
+  
