@@ -19,7 +19,6 @@ export class InicioPage implements OnInit {
     this.playAnimation();
   }
 
-  // Método para ejecutar la animación
   playAnimation() {
     const element = document.querySelector('.animated-list');
 
