@@ -1,0 +1,7 @@
+{
+  "name": "MiMascotAPP",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

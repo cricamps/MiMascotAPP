@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'welcome' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-card>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-label>{{ 'profile' | translate }}</ion-label>
+          <ion-button color="secondary" routerLink="/perfil">{{ 'view' | translate }}</ion-button>
+        </ion-item>
+        <ion-item>
+          <ion-label>{{ 'events' | translate }}</ion-label>
+          <ion-button color="secondary" routerLink="/eventos">{{ 'view' | translate }}</ion-button>
+        </ion-item>
+        <ion-item>
+          <ion-label>{{ 'settings' | translate }}</ion-label>
+          <ion-button color="secondary" routerLink="/configuraciones">{{ 'view' | translate }}</ion-button>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
