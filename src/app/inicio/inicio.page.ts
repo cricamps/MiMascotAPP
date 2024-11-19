@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AnimationController } from '@ionic/angular';
+import { SqliteService } from '../services/sqlite.service';
 
 @Component({
   selector: 'app-inicio',
@@ -13,10 +14,27 @@ export class InicioPage implements OnInit {
     { nombre: 'Raya' },
   ];
 
-  constructor(private animationCtrl: AnimationController) {}
+  items: any[] = []; // Variable para almacenar los datos de SQLite
+
+  constructor(
+    private animationCtrl: AnimationController,
+    private sqliteService: SqliteService
+  ) {}
 
   ngOnInit() {
     this.playAnimation();
+    this.initializeDatabase();
+  }
+
+  // Método para inicializar la base de datos y cargar los datos
+  async initializeDatabase() {
+    try {
+      await this.sqliteService.initializeDatabase();
+      this.items = await this.sqliteService.getItems();
+      console.log('Items cargados:', this.items);
+    } catch (error) {
+      console.error('Error al inicializar la base de datos:', error);
+    }
   }
 
   playAnimation() {
@@ -31,6 +49,15 @@ export class InicioPage implements OnInit {
       animation.play();
     } else {
       console.error('Elemento no encontrado: .animated-list');
+    }
+  }
+
+  async addItem() {
+    try {
+      await this.sqliteService.addItem('Nuevo Item');
+      this.items = await this.sqliteService.getItems(); // Actualiza la lista después de agregar
+    } catch (error) {
+      console.error('Error al agregar el item:', error);
     }
   }
 }
