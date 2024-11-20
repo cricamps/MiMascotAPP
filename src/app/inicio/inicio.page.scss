@@ -8,8 +8,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px; /* Espaciado entre las mascotas */
-    margin-top: 20px; /* Margen superior para iniciar desde arriba */
+    gap: 20px;
+    margin-top: 20px;
   }
   
   .mascota-item {
@@ -27,6 +27,19 @@
   .boton-agregar {
     display: flex;
     justify-content: center;
-    margin-top: 20px; /* Espaciado entre las mascotas y el botón */
+    margin-top: 20px;
+  }
+  
+  ion-list {
+    margin: 20px;
+  }
+  
+  ion-item {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+  
+  .boton-agregar {
+    margin-top: 20px;
   }
   

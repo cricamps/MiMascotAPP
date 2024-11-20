@@ -32,7 +32,7 @@ const routes: Routes = [
     loadChildren: () => import('./configuraciones/configuraciones.module').then( m => m.ConfiguracionesPageModule)
   },
   {
-    path: 'agregarmascota',
+    path: 'agregar-mascota',
     loadChildren: () => import('./agregar-mascota/agregar-mascota.module').then( m => m.AgregarMascotaPageModule)
   },
 ];

@@ -5,15 +5,24 @@
 </ion-header>
 
 <ion-content>
-  <div class="mascotas-container">
-    <div *ngFor="let mascota of mascotas" class="mascota-item">
-      <ion-icon name="paw-outline" size="large"></ion-icon>
-      <p>{{ mascota.nombre }}</p>
-    </div>
+  <div class="animated-list">
+    <ion-list>
+      <ion-item *ngFor="let mascota of mascotas">
+        <ion-label>
+          <h2>{{ mascota.nombre }}</h2>
+          <p>Edad: {{ mascota.edad }} años</p>
+          <p>Raza: {{ mascota.raza }}</p>
+          <p>Color: {{ mascota.color }}</p>
+        </ion-label>
+        <ion-button fill="outline" color="danger" (click)="eliminarMascota(mascota.id)">
+          Eliminar
+        </ion-button>
+      </ion-item>
+    </ion-list>
   </div>
   <div class="boton-agregar">
-    <ion-button expand="block" color="light" shape="round" fill="outline" routerLink="/agregarmascota">
+    <ion-button expand="block" color="primary" routerLink="/agregar-mascota">
       Agregar Mascota
     </ion-button>
-  </div>
+  </div>  
 </ion-content>

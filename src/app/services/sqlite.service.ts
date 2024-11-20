@@ -5,21 +5,25 @@ import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
   providedIn: 'root',
 })
 export class SqliteService {
-  dbInstance!: SQLiteObject;
+  private dbInstance: SQLiteObject | null = null;
 
   constructor(private sqlite: SQLite) {}
 
   async initializeDatabase() {
     try {
       this.dbInstance = await this.sqlite.create({
-        name: 'my_database.db',
-        location: 'default',
+        name: 'mascotas.db', // Nombre de la base de datos
+        location: 'default', // Almacenamiento por defecto
       });
 
+      // Crear tabla si no existe
       await this.dbInstance.executeSql(
-        `CREATE TABLE IF NOT EXISTS items (
+        `CREATE TABLE IF NOT EXISTS mascotas (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT
+          nombre TEXT,
+          edad INTEGER,
+          raza TEXT,
+          color TEXT
         )`,
         []
       );
@@ -29,24 +33,37 @@ export class SqliteService {
     }
   }
 
-  async addItem(name: string) {
-    if (!this.dbInstance) {
-      throw new Error('La base de datos no está inicializada.');
+  async addMascota(nombre: string, edad: number, raza: string, color: string) {
+    const query = `INSERT INTO mascotas (nombre, edad, raza, color) VALUES (?, ?, ?, ?)`;
+    try {
+      await this.dbInstance?.executeSql(query, [nombre, edad, raza, color]);
+      console.log('Mascota agregada:', nombre);
+    } catch (error) {
+      console.error('Error al agregar mascota:', error);
     }
-    const query = `INSERT INTO items (name) VALUES (?)`;
-    return this.dbInstance.executeSql(query, [name]);
   }
 
-  async getItems() {
-    if (!this.dbInstance) {
-      throw new Error('La base de datos no está inicializada.');
+  async getMascotas() {
+    const query = `SELECT * FROM mascotas`;
+    try {
+      const res = await this.dbInstance?.executeSql(query, []);
+      const mascotas = [];
+      if (res) {
+        for (let i = 0; i < res.rows.length; i++) {
+          mascotas.push(res.rows.item(i));
+        }
+      }
+      return mascotas;
+    } catch (error) {
+      console.error('Error al obtener mascotas:', error);
+      return [];
     }
-    const query = `SELECT * FROM items`;
-    const res = await this.dbInstance.executeSql(query, []);
-    const items = [];
-    for (let i = 0; i < res.rows.length; i++) {
-      items.push(res.rows.item(i));
-    }
-    return items;
+  }
+  
+
+  // Eliminar una mascota por ID
+  async deleteMascota(id: number) {
+    const query = `DELETE FROM mascotas WHERE id = ?`;
+    return this.dbInstance?.executeSql(query, [id]);
   }
 }

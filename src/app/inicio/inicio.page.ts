@@ -8,32 +8,43 @@ import { SqliteService } from '../services/sqlite.service';
   styleUrls: ['./inicio.page.scss'],
 })
 export class InicioPage implements OnInit {
-  mascotas = [
-    { nombre: 'Luna' },
-    { nombre: 'Jazmín' },
-    { nombre: 'Raya' },
-  ];
-
-  items: any[] = []; // Variable para almacenar los datos de SQLite
+  mascotas: any[] = []; // Lista dinámica de mascotas
 
   constructor(
     private animationCtrl: AnimationController,
     private sqliteService: SqliteService
   ) {}
 
-  ngOnInit() {
-    this.playAnimation();
-    this.initializeDatabase();
+  async ngOnInit() {
+    try {
+      await this.sqliteService.initializeDatabase(); // Inicializa la base de datos
+      await this.cargarMascotas(); // Carga la lista de mascotas
+      this.playAnimation(); // Activa la animación
+    } catch (error) {
+      console.error('Error en ngOnInit:', error);
+    }
   }
 
-  // Método para inicializar la base de datos y cargar los datos
-  async initializeDatabase() {
+  async ionViewWillEnter() {
+    await this.cargarMascotas(); // Actualiza la lista de mascotas al volver a la página
+  }
+
+  async cargarMascotas() {
     try {
-      await this.sqliteService.initializeDatabase();
-      this.items = await this.sqliteService.getItems();
-      console.log('Items cargados:', this.items);
+      this.mascotas = await this.sqliteService.getMascotas(); // Obtiene las mascotas desde la base de datos
+      console.log('Mascotas cargadas:', this.mascotas);
     } catch (error) {
-      console.error('Error al inicializar la base de datos:', error);
+      console.error('Error al cargar las mascotas:', error);
+    }
+  }
+
+  async eliminarMascota(id: number) {
+    try {
+      await this.sqliteService.deleteMascota(id); // Elimina una mascota por ID
+      this.mascotas = await this.sqliteService.getMascotas(); // Actualiza la lista después de eliminar
+      console.log('Mascota eliminada con éxito:', id);
+    } catch (error) {
+      console.error('Error al eliminar mascota:', error);
     }
   }
 
@@ -49,15 +60,6 @@ export class InicioPage implements OnInit {
       animation.play();
     } else {
       console.error('Elemento no encontrado: .animated-list');
-    }
-  }
-
-  async addItem() {
-    try {
-      await this.sqliteService.addItem('Nuevo Item');
-      this.items = await this.sqliteService.getItems(); // Actualiza la lista después de agregar
-    } catch (error) {
-      console.error('Error al agregar el item:', error);
     }
   }
 }
