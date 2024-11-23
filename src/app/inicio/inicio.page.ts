@@ -8,7 +8,8 @@ import { SqliteService } from '../services/sqlite.service';
   styleUrls: ['./inicio.page.scss'],
 })
 export class InicioPage implements OnInit {
-  mascotas: any[] = []; // Lista dinámica de mascotas
+  mascotas: any[] = [];
+  userId: number = 1; // ID del usuario logueado (esto debería configurarse dinámicamente)
 
   constructor(
     private animationCtrl: AnimationController,
@@ -17,21 +18,22 @@ export class InicioPage implements OnInit {
 
   async ngOnInit() {
     try {
-      await this.sqliteService.initializeDatabase(); // Inicializa la base de datos
-      await this.cargarMascotas(); // Carga la lista de mascotas
-      this.playAnimation(); // Activa la animación
+      await this.sqliteService.initializeDatabase();
+      await this.cargarMascotas();
+      this.playAnimation();
     } catch (error) {
       console.error('Error en ngOnInit:', error);
     }
   }
 
   async ionViewWillEnter() {
-    await this.cargarMascotas(); // Actualiza la lista de mascotas al volver a la página
+    await this.cargarMascotas();
   }
 
   async cargarMascotas() {
     try {
-      this.mascotas = await this.sqliteService.getMascotas(); // Obtiene las mascotas desde la base de datos
+      // Obtener mascotas del usuario logueado
+      this.mascotas = await this.sqliteService.getMascotasByUser(this.userId);
       console.log('Mascotas cargadas:', this.mascotas);
     } catch (error) {
       console.error('Error al cargar las mascotas:', error);
@@ -40,8 +42,9 @@ export class InicioPage implements OnInit {
 
   async eliminarMascota(id: number) {
     try {
-      await this.sqliteService.deleteMascota(id); // Elimina una mascota por ID
-      this.mascotas = await this.sqliteService.getMascotas(); // Actualiza la lista después de eliminar
+      await this.sqliteService.deleteMascota(id);
+      // Actualiza la lista después de eliminar
+      this.mascotas = await this.sqliteService.getMascotasByUser(this.userId);
       console.log('Mascota eliminada con éxito:', id);
     } catch (error) {
       console.error('Error al eliminar mascota:', error);

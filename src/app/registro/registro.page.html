@@ -11,31 +11,22 @@
     </ion-card-header>
     <ion-card-content>
       <form (submit)="register()">
-        <ion-input
-          placeholder="Usuario"
-          type="text"
-          clearInput
-          [(ngModel)]="username"
-          name="username"
-          required
-        ></ion-input>
-        <ion-input
-          placeholder="Contraseña"
-          type="password"
-          clearInput
-          [(ngModel)]="password"
-          name="password"
-          required
-        ></ion-input>
-        <ion-input
-          placeholder="Correo Electrónico"
-          type="email"
-          clearInput
-          [(ngModel)]="email"
-          name="email"
-          required
-        ></ion-input>
-        <ion-button expand="block" color="secondary" type="submit">
+        <ion-item>
+          <ion-label position="floating">Usuario</ion-label>
+          <ion-input type="text" [(ngModel)]="username" name="username" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Correo Electrónico</ion-label>
+          <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
+        </ion-item>
+
+        <ion-button expand="block" type="submit" color="primary">
           Registrar
         </ion-button>
       </form>
