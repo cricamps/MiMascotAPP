@@ -16,28 +16,26 @@ export class RegistroPage {
   constructor(private sqliteService: SqliteService, private router: Router) {}
 
   async register() {
-    this.error = null;
-
     if (!this.username || !this.password || !this.email) {
-      this.error = 'Todos los campos son obligatorios';
+      this.error = 'Todos los campos son obligatorios.';
       return;
     }
-
+  
     try {
-      const existingUser = await this.sqliteService.validateUser(this.username, this.password);
-
-
+      const existingUser = await this.sqliteService.validateUsername(this.username);
       if (existingUser) {
-        this.error = 'El usuario ya existe. Prueba con otro nombre de usuario.';
+        this.error = 'El nombre de usuario ya está registrado.';
         return;
       }
-
+  
       await this.sqliteService.addUser(this.username, this.password, this.email);
-      console.log('Usuario registrado con éxito');
+      console.log('Usuario registrado con éxito.');
+      this.error = null;
       this.router.navigate(['/login']);
     } catch (error) {
       console.error('Error al registrar el usuario:', error);
-      this.error = 'Error al registrar el usuario. Intente nuevamente.';
+      this.error = 'No se pudo registrar el usuario. Verifica la consola para más detalles.';
     }
   }
-}
+  
+}  
