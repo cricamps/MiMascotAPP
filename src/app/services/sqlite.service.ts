@@ -34,14 +34,33 @@ export class SqliteService {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           username TEXT UNIQUE,
           password TEXT,
-          email TEXT
-        )`,        
+          email TEXT,
+          role TEXT DEFAULT 'user'
+        )`,
         []
       );
       console.log('Base de datos inicializada.');
-    } catch (error) {
+    } 
+      catch (error) {
       console.error('Error al inicializar la base de datos:', error);
     }
+    const adminExists = await this.dbInstance.executeSql(
+      `SELECT COUNT(*) AS count FROM usuarios WHERE role = 'admin'`,
+      []
+    );
+    
+    if (adminExists.rows.length > 0 && adminExists.rows.item(0).count === 0) {
+      const hashedPassword = this.hashPassword('admin');
+      await this.dbInstance.executeSql(
+        `INSERT INTO usuarios (username, password, email, role) VALUES (?, ?, ?, ?)`,
+        ['admin', hashedPassword, 'admin@example.com', 'admin']
+      );
+      console.log('Usuario admin creado con éxito.');
+    } else {
+      console.log('El usuario admin ya existe.');
+    }
+    
+
   }
 
   async addMascota(nombre: string, edad: number, raza: string, color: string, userId: number): Promise<void> {
@@ -91,7 +110,7 @@ export class SqliteService {
   async getStatistics(): Promise<{ userCount: number; petCount: number }> {
     if (!this.dbInstance) throw new Error('Database not initialized');
   
-    const userCountQuery = `SELECT COUNT(*) as userCount FROM users`;
+    const userCountQuery = `SELECT COUNT(*) as userCount FROM usuarios`;
     const petCountQuery = `SELECT COUNT(*) as petCount FROM mascotas`;
   
     try {
@@ -113,12 +132,12 @@ export class SqliteService {
   async validateUser(username: string, password: string): Promise<any> {
     if (!this.dbInstance) throw new Error('Database not initialized');
   
-    const query = `SELECT * FROM uausarios WHERE username = ?`;
+    const query = `SELECT * FROM usuarios WHERE username = ?`;
     try {
       const res = await this.dbInstance.executeSql(query, [username]);
       if (res.rows.length > 0) {
         const user = res.rows.item(0);
-        const hashedPassword = await this.hashPassword(password);
+        const hashedPassword = this.hashPassword(password);
         if (hashedPassword === user.password) {
           return { id: user.id, role: user.role };
         }
@@ -129,6 +148,7 @@ export class SqliteService {
       throw error;
     }
   }
+  
 
   hashPassword(password: string): string {
     return CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
