@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
 import * as CryptoJS from 'crypto-js';
@@ -8,165 +7,88 @@ import * as CryptoJS from 'crypto-js';
 })
 export class SqliteService {
   private dbInstance: SQLiteObject | null = null;
-  private currentUserId: number | null = null;
 
   constructor(private sqlite: SQLite) {}
 
   async initializeDatabase() {
     try {
       this.dbInstance = await this.sqlite.create({
-        name: 'mascotas.db',
-        location: 'default',
+        name: 'mascotas.db', // Nombre de la base de datos
+        location: 'default', // Almacenamiento por defecto
       });
 
-      await this.dbInstance.executeSql(
-        `CREATE TABLE IF NOT EXISTS users (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          username TEXT UNIQUE,
-          password TEXT,
-          email TEXT,
-          role TEXT DEFAULT 'usuario' -- Rol del usuario (usuario o admin)
-        )`,
-        []
-      );
-      
-
+      // Crear tabla si no existe
       await this.dbInstance.executeSql(
         `CREATE TABLE IF NOT EXISTS mascotas (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           nombre TEXT,
           edad INTEGER,
           raza TEXT,
-          color TEXT,
-          userId INTEGER
+          color TEXT
         )`,
         []
       );
 
-      console.log('Database initialized successfully.');
+      await this.dbInstance.executeSql(
+        `CREATE TABLE IF NOT EXISTS usuarios (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          username TEXT UNIQUE,
+          password TEXT,
+          email TEXT
+        )`,        
+        []
+      );
+      console.log('Base de datos inicializada.');
     } catch (error) {
-      console.error('Error initializing database:', error);
-      throw error;
+      console.error('Error al inicializar la base de datos:', error);
     }
   }
 
-  async hashPassword(password: string): Promise<string> {
-    return CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
-  }
-
-  async addUser(username: string, password: string, email: string) {
-    if (!this.dbInstance) throw new Error('Database not initialized');
-
-    const hashedPassword = await this.hashPassword(password);
-    const query = `INSERT INTO users (username, password, email) VALUES (?, ?, ?)`;
-    try {
-      await this.dbInstance.executeSql(query, [username, hashedPassword, email]);
-      console.log('User added successfully:', username);
-    } catch (error) {
-      console.error('Error adding user:', error);
-      throw error;
-    }
-  }
-
-  async validateUser(username: string, password: string): Promise<any> {
+  async addMascota(nombre: string, edad: number, raza: string, color: string, userId: number): Promise<void> {
     if (!this.dbInstance) throw new Error('Database not initialized');
   
-    const query = `SELECT * FROM users WHERE username = ?`;
+    const query = `INSERT INTO mascotas (nombre, edad, raza, color, userId) VALUES (?, ?, ?, ?, ?)`;
     try {
-      const res = await this.dbInstance.executeSql(query, [username]);
-      if (res.rows.length > 0) {
-        const user = res.rows.item(0);
-        const hashedPassword = await this.hashPassword(password);
-        if (hashedPassword === user.password) {
-          this.currentUserId = user.id;
-          return { id: user.id, role: user.role }; 
+      await this.dbInstance.executeSql(query, [nombre, edad, raza, color, userId]);
+      console.log('Mascota añadida con éxito:', nombre);
+    } catch (error) {
+      console.error('Error al añadir mascota:', error);
+      throw error;
+    }
+  }
+  
+  async getMascotas() {
+    const query = `SELECT * FROM mascotas`;
+    try {
+      const res = await this.dbInstance?.executeSql(query, []);
+      const mascotas = [];
+      if (res) {
+        for (let i = 0; i < res.rows.length; i++) {
+          mascotas.push(res.rows.item(i));
         }
       }
-      return null;
+      console.log('Mascotas recuperadas:', mascotas);
+      return mascotas;
     } catch (error) {
-      console.error('Error validating user:', error);
-      throw error;
+      console.error('Error al obtener mascotas:', error);
+      return [];
     }
   }
-  
 
   async validateUsername(username: string): Promise<boolean> {
     if (!this.dbInstance) throw new Error('Database not initialized');
 
-    const query = `SELECT * FROM users WHERE username = ?`;
+    const query = `SELECT * FROM usuarios WHERE username = ?`;
     try {
       const res = await this.dbInstance.executeSql(query, [username]);
-      return res.rows.length > 0;
+      return res.rows.length > 0; // Retorna true si existe
     } catch (error) {
       console.error('Error validating username:', error);
       throw error;
     }
   }
 
-  async addMascota(nombre: string, edad: number, raza: string, color: string, userId: number) {
-    if (!this.dbInstance) throw new Error('Database not initialized');
-
-    const query = `INSERT INTO mascotas (nombre, edad, raza, color, userId) VALUES (?, ?, ?, ?, ?)`;
-    try {
-      await this.dbInstance.executeSql(query, [nombre, edad, raza, color, userId]);
-      console.log('Mascota added successfully:', nombre);
-    } catch (error) {
-      console.error('Error adding mascota:', error);
-      throw error;
-    }
-  }
-
-  async getMascotasByUser(userId: number): Promise<any[]> {
-    if (!this.dbInstance) throw new Error('Database not initialized');
-
-    const query = `SELECT * FROM mascotas WHERE userId = ?`;
-    try {
-      const res = await this.dbInstance.executeSql(query, [userId]);
-      const mascotas = [];
-      for (let i = 0; i < res.rows.length; i++) {
-        mascotas.push(res.rows.item(i));
-      }
-      console.log('Mascotas for user:', mascotas);
-      return mascotas;
-    } catch (error) {
-      console.error('Error fetching mascotas by user:', error);
-      throw error;
-    }
-  }
-
-  async deleteMascota(id: number) {
-    if (!this.dbInstance) throw new Error('Database not initialized');
-
-    const query = `DELETE FROM mascotas WHERE id = ?`;
-    try {
-      await this.dbInstance.executeSql(query, [id]);
-      console.log('Mascota deleted successfully:', id);
-    } catch (error) {
-      console.error('Error deleting mascota:', error);
-      throw error;
-    }
-  }
-
-  async getAllUsers(): Promise<any[]> {
-    if (!this.dbInstance) {
-      throw new Error('Database not initialized');
-    }
-    const query = 'SELECT * FROM users';
-    try {
-      const res = await this.dbInstance.executeSql(query, []);
-      const users = [];
-      for (let i = 0; i < res.rows.length; i++) {
-        users.push(res.rows.item(i));
-      }
-      console.log('Registered users:', users);
-      return users;
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      throw error;
-    }
-  }
-
-  async getStatistics() {
+  async getStatistics(): Promise<{ userCount: number; petCount: number }> {
     if (!this.dbInstance) throw new Error('Database not initialized');
   
     const userCountQuery = `SELECT COUNT(*) as userCount FROM users`;
@@ -175,14 +97,78 @@ export class SqliteService {
     try {
       const userCountRes = await this.dbInstance.executeSql(userCountQuery, []);
       const petCountRes = await this.dbInstance.executeSql(petCountQuery, []);
-      return {
-        userCount: userCountRes.rows.item(0).userCount,
-        petCount: petCountRes.rows.item(0).petCount,
-      };
+  
+      const userCount = userCountRes.rows.item(0).userCount || 0;
+      const petCount = petCountRes.rows.item(0).petCount || 0;
+  
+      return { userCount, petCount };
     } catch (error) {
       console.error('Error fetching statistics:', error);
       throw error;
     }
   }
   
+  
+
+  async validateUser(username: string, password: string): Promise<any> {
+    if (!this.dbInstance) throw new Error('Database not initialized');
+  
+    const query = `SELECT * FROM uausarios WHERE username = ?`;
+    try {
+      const res = await this.dbInstance.executeSql(query, [username]);
+      if (res.rows.length > 0) {
+        const user = res.rows.item(0);
+        const hashedPassword = await this.hashPassword(password);
+        if (hashedPassword === user.password) {
+          return { id: user.id, role: user.role };
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('Error validando usuario:', error);
+      throw error;
+    }
+  }
+
+  hashPassword(password: string): string {
+    return CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+  }
+  
+  async addUser(username: string, password: string, email: string): Promise<void> {
+    if (!this.dbInstance) throw new Error('Database not initialized');
+  
+    const hashedPassword = this.hashPassword(password); // Asegúrate de usar hashing
+    const query = `INSERT INTO usuarios (username, password, email) VALUES (?, ?, ?)`;
+    try {
+      await this.dbInstance.executeSql(query, [username, hashedPassword, email]);
+      console.log('Usuario agregado con éxito:', username);
+    } catch (error) {
+      console.error('Error al agregar el usuario:', error);
+      throw error;
+    }
+  }
+  
+  async getMascotasByUser(userId: number): Promise<any[]> {
+    if (!this.dbInstance) throw new Error('Database not initialized');
+  
+    const query = `SELECT * FROM mascotas WHERE userId = ?`;
+    try {
+      const res = await this.dbInstance.executeSql(query, [userId]);
+      const mascotas = [];
+      for (let i = 0; i < res.rows.length; i++) {
+        mascotas.push(res.rows.item(i));
+      }
+      return mascotas;
+    } catch (error) {
+      console.error('Error fetching mascotas by user:', error);
+      throw error;
+    }
+  }
+  
+
+  // Eliminar una mascota por ID
+  async deleteMascota(id: number) {
+    const query = `DELETE FROM mascotas WHERE id = ?`;
+    return this.dbInstance?.executeSql(query, [id]);
+  }
 }
