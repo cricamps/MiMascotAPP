@@ -24,10 +24,12 @@ export class SqliteService {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           username TEXT UNIQUE,
           password TEXT,
-          email TEXT
+          email TEXT,
+          role TEXT DEFAULT 'usuario' -- Rol del usuario (usuario o admin)
         )`,
         []
       );
+      
 
       await this.dbInstance.executeSql(
         `CREATE TABLE IF NOT EXISTS mascotas (
@@ -68,27 +70,17 @@ export class SqliteService {
 
   async validateUser(username: string, password: string): Promise<any> {
     if (!this.dbInstance) throw new Error('Database not initialized');
-
-    console.log('Validating user:', username);
+  
     const query = `SELECT * FROM users WHERE username = ?`;
     try {
       const res = await this.dbInstance.executeSql(query, [username]);
       if (res.rows.length > 0) {
         const user = res.rows.item(0);
-        console.log('User found in DB:', user);
-
         const hashedPassword = await this.hashPassword(password);
-        console.log('Provided password hash:', hashedPassword);
-
         if (hashedPassword === user.password) {
-          console.log('Password matches!');
           this.currentUserId = user.id;
-          return user;
-        } else {
-          console.log('Password does not match!');
+          return { id: user.id, role: user.role }; 
         }
-      } else {
-        console.log('No user found with this username.');
       }
       return null;
     } catch (error) {
@@ -96,6 +88,7 @@ export class SqliteService {
       throw error;
     }
   }
+  
 
   async validateUsername(username: string): Promise<boolean> {
     if (!this.dbInstance) throw new Error('Database not initialized');
@@ -172,4 +165,24 @@ export class SqliteService {
       throw error;
     }
   }
+
+  async getStatistics() {
+    if (!this.dbInstance) throw new Error('Database not initialized');
+  
+    const userCountQuery = `SELECT COUNT(*) as userCount FROM users`;
+    const petCountQuery = `SELECT COUNT(*) as petCount FROM mascotas`;
+  
+    try {
+      const userCountRes = await this.dbInstance.executeSql(userCountQuery, []);
+      const petCountRes = await this.dbInstance.executeSql(petCountQuery, []);
+      return {
+        userCount: userCountRes.rows.item(0).userCount,
+        petCount: petCountRes.rows.item(0).petCount,
+      };
+    } catch (error) {
+      console.error('Error fetching statistics:', error);
+      throw error;
+    }
+  }
+  
 }

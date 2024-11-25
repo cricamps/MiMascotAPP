@@ -15,26 +15,23 @@ export class LoginPage {
   constructor(private sqliteService: SqliteService, private router: Router) {}
 
   async login() {
-    if (!this.username || !this.password) {
-      this.error = 'Por favor, completa todos los campos.';
-      return;
-    }
-
     try {
       const user = await this.sqliteService.validateUser(this.username, this.password);
       if (user) {
-        console.log('Inicio de sesión exitoso:', user);
-        this.router.navigate(['/inicio']); // Navega al inicio si el usuario es válido
+        if (user.role === 'admin') {
+          this.router.navigate(['/home']); // Navega a home para administradores
+        } else {
+          this.router.navigate(['/inicio']); // Navega a inicio para usuarios normales
+        }
       } else {
-        this.error = 'Usuario o contraseña incorrectos.';
+        alert('Usuario o contraseña incorrectos.');
       }
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      this.error = 'Hubo un problema al iniciar sesión. Inténtalo nuevamente.';
+      console.error('Error durante el inicio de sesión:', error);
     }
   }
 
-  clearField(field: 'username' | 'password') {
+  clearField(field: 'username' | 'password'): void {
     if (field === 'username') {
       this.username = '';
     } else if (field === 'password') {
