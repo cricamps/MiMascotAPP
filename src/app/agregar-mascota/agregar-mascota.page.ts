@@ -1,5 +1,5 @@
+
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { SqliteService } from '../services/sqlite.service';
 
 @Component({
@@ -8,38 +8,34 @@ import { SqliteService } from '../services/sqlite.service';
   styleUrls: ['./agregar-mascota.page.scss'],
 })
 export class AgregarMascotaPage {
-  // Objeto para almacenar los datos de la mascota
   mascota = {
     nombre: '',
-    edad: null,
+    edad: 0, // Default to 0 to avoid null issues
     raza: '',
-    color: ''
+    color: '',
+    photo: null,
+    latitude: null,
+    longitude: null,
   };
+  userId = 1; // Example user ID
 
-  userId: number = 1; // ID del usuario actual (puedes obtenerlo dinámicamente)
+  constructor(private sqliteService: SqliteService) {}
 
-  constructor(private sqliteService: SqliteService, private router: Router) {}
-
-  async guardarMascota() {
-    // Validar que todos los campos estén completos
-    if (!this.mascota.nombre || !this.mascota.edad || !this.mascota.raza || !this.mascota.color) {
-      console.error('Todos los campos son obligatorios');
-      return;
-    }
-
+  async agregarMascota() {
     try {
-      // Agregar mascota a la base de datos
       await this.sqliteService.addMascota(
         this.mascota.nombre,
-        this.mascota.edad,
+        this.mascota.edad || 0, // Ensure edad is a number
         this.mascota.raza,
         this.mascota.color,
+        this.mascota.photo || null,
+        this.mascota.latitude || null,
+        this.mascota.longitude || null,
         this.userId
       );
-      console.log('Mascota guardada exitosamente.');
-      this.router.navigate(['/inicio']); // Redirige a la página de inicio
+      console.log('Mascota agregada con éxito');
     } catch (error) {
-      console.error('Error al guardar la mascota:', error);
+      console.error('Error al agregar mascota:', error);
     }
   }
 }

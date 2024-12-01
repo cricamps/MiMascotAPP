@@ -1,36 +1,28 @@
+
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/inicio"></ion-back-button>
-    </ion-buttons>
     <ion-title>Agregar Mascota</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <form (submit)="guardarMascota()">
+<ion-content>
+  <form (submit)="agregarMascota()">
     <ion-item>
-      <ion-label position="floating">Nombre</ion-label>
-      <ion-input type="text" [(ngModel)]="mascota.nombre" name="nombre" required></ion-input>
+      <ion-label>Nombre</ion-label>
+      <ion-input [(ngModel)]="mascota.nombre" name="nombre"></ion-input>
     </ion-item>
-
     <ion-item>
-      <ion-label position="floating">Edad</ion-label>
-      <ion-input type="number" [(ngModel)]="mascota.edad" name="edad" required></ion-input>
+      <ion-label>Edad</ion-label>
+      <ion-input type="number" [(ngModel)]="mascota.edad" name="edad"></ion-input>
     </ion-item>
-
     <ion-item>
-      <ion-label position="floating">Raza</ion-label>
-      <ion-input type="text" [(ngModel)]="mascota.raza" name="raza" required></ion-input>
+      <ion-label>Raza</ion-label>
+      <ion-input [(ngModel)]="mascota.raza" name="raza"></ion-input>
     </ion-item>
-
     <ion-item>
-      <ion-label position="floating">Color</ion-label>
-      <ion-input type="text" [(ngModel)]="mascota.color" name="color" required></ion-input>
+      <ion-label>Color</ion-label>
+      <ion-input [(ngModel)]="mascota.color" name="color"></ion-input>
     </ion-item>
-
-    <ion-button expand="block" type="submit" color="primary">
-      Guardar Mascota
-    </ion-button>
+    <ion-button expand="full" type="submit">Agregar Mascota</ion-button>
   </form>
 </ion-content>

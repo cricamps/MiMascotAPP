@@ -1,5 +1,6 @@
+
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ApiService } from '../services/api.service';
 import { SqliteService } from '../services/sqlite.service';
 
 @Component({
@@ -8,26 +9,25 @@ import { SqliteService } from '../services/sqlite.service';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  userCount: number = 0;
-  petCount: number = 0;
+  posts: { id: number; title: string; body: string }[] = [];
+  errorMessage: string | null = null;
 
-  constructor(private sqliteService: SqliteService, private router: Router) {}
+  constructor(private apiService: ApiService, private sqliteService: SqliteService) {}
 
   async ngOnInit() {
-    await this.loadStatistics();
+    await this.sqliteService.initializeDatabase(); // Ensure database is ready
+    this.loadPosts();
   }
 
-  async loadStatistics() {
+  async loadPosts() {
     try {
-      const stats = await this.sqliteService.getStatistics();
-      this.userCount = stats.userCount;
-      this.petCount = stats.petCount;
+      const data = await this.apiService.fetchPosts().toPromise();
+      this.posts = data || []; // Ensure posts is always an array
+      await this.sqliteService.savePosts(this.posts); // Save posts for offline use
     } catch (error) {
-      console.error('Error al cargar estadísticas:', error);
+      console.error('Error loading posts from API:', error);
+      this.errorMessage = 'Failed to load data. Displaying offline content.';
+      this.posts = await this.sqliteService.getPosts(); // Load offline data if API fails
     }
-  }
-
-  navigateToUserList() {
-    this.router.navigate(['/user-list']); // Cambia '/user-list' por la ruta correcta
   }
 }

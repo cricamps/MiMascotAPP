@@ -1,15 +1,18 @@
+
 <ion-header>
   <ion-toolbar>
-    <ion-title>Administración</ion-title>
+    <ion-title>Home</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div class="stats-container">
-    <h2>Estadísticas</h2>
-    <p>Total de usuarios: {{ userCount }}</p>
-    <p>Total de mascotas: {{ petCount }}</p>
-  </div>
-
-  <ion-button expand="block" (click)="navigateToUserList()">Ver lista de usuarios</ion-button>
+  <div *ngIf="errorMessage">{{ errorMessage }}</div>
+  <ion-list>
+    <ion-item *ngFor="let post of posts">
+      <ion-label>
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.body }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>

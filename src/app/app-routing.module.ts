@@ -1,49 +1,40 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
-    {
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'
   },
   {
-    path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+    path: 'login',
+    loadChildren: () => import('./pages/login/login.module').then(m => m.LoginPageModule)
   },
   {
-    path: 'login',
-    loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
+    path: 'register',
+    loadChildren: () => import('./pages/register/register.module').then(m => m.RegisterPageModule)
+  },
+  {
+    path: 'home',
+    loadChildren: () => import('./pages/home/home.module').then(m => m.HomePageModule),
+    canActivate: [AuthGuard],
+    data: { role: 'admin' }
   },
   {
     path: 'inicio',
-    loadChildren: () => import('./inicio/inicio.module').then( m => m.InicioPageModule)
+    loadChildren: () => import('./pages/inicio/inicio.module').then(m => m.InicioPageModule),
+    canActivate: [AuthGuard]
   },
   {
-    path: 'perfil',
-    loadChildren: () => import('./perfil/perfil.module').then( m => m.PerfilPageModule)
+    path: 'access-denied',
+    loadChildren: () => import('./pages/access-denied/access-denied.module').then(m => m.AccessDeniedPageModule)
   },
   {
-    path: 'eventos',
-    loadChildren: () => import('./eventos/eventos.module').then( m => m.EventosPageModule)
-  },
-  {
-    path: 'configuraciones',
-    loadChildren: () => import('./configuraciones/configuraciones.module').then( m => m.ConfiguracionesPageModule)
-  },
-  {
-    path: 'agregar-mascota',
-    loadChildren: () => import('./agregar-mascota/agregar-mascota.module').then( m => m.AgregarMascotaPageModule)
-  },
-  {
-    path: 'registro',
-    loadChildren: () => import('./registro/registro.module').then( m => m.RegistroPageModule)
-  },
-  {
-    path: 'lista-usuarios',
-    loadChildren: () => import('./lista-usuarios/lista-usuarios.module').then(m => m.ListaUsuariosPageModule),
-  },
-
+    path: '**',
+    redirectTo: 'login'
+  }
 ];
 
 @NgModule({

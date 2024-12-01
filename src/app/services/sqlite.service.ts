@@ -1,6 +1,6 @@
+
 import { Injectable } from '@angular/core';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
-import * as CryptoJS from 'crypto-js';
 
 @Injectable({
   providedIn: 'root',
@@ -13,22 +13,33 @@ export class SqliteService {
   async initializeDatabase() {
     try {
       this.dbInstance = await this.sqlite.create({
-        name: 'mascotas.db', // Nombre de la base de datos
-        location: 'default', // Almacenamiento por defecto
+        name: 'app_database.db',
+        location: 'default',
       });
 
-      // Crear tabla si no existe
+      // Create posts table if it doesn't exist
+      await this.dbInstance.executeSql(
+        `CREATE TABLE IF NOT EXISTS posts (
+          id INTEGER PRIMARY KEY,
+          title TEXT,
+          body TEXT
+        )`, []);
+
+      // Create mascotas table with all fields
       await this.dbInstance.executeSql(
         `CREATE TABLE IF NOT EXISTS mascotas (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           nombre TEXT,
           edad INTEGER,
           raza TEXT,
-          color TEXT
-        )`,
-        []
-      );
+          color TEXT,
+          photo TEXT,
+          latitude REAL,
+          longitude REAL,
+          userId INTEGER
+        )`, []);
 
+      // Create usuarios table with role if it doesn't exist
       await this.dbInstance.executeSql(
         `CREATE TABLE IF NOT EXISTS usuarios (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,159 +47,120 @@ export class SqliteService {
           password TEXT,
           email TEXT,
           role TEXT DEFAULT 'user'
-        )`,
-        []
-      );
-      console.log('Base de datos inicializada.');
-    } 
-      catch (error) {
-      console.error('Error al inicializar la base de datos:', error);
-    }
-    const adminExists = await this.dbInstance.executeSql(
-      `SELECT COUNT(*) AS count FROM usuarios WHERE role = 'admin'`,
-      []
-    );
-    
-    if (adminExists.rows.length > 0 && adminExists.rows.item(0).count === 0) {
-      const hashedPassword = this.hashPassword('admin');
+        )`, []);
+
+      // Ensure admin user exists
       await this.dbInstance.executeSql(
-        `INSERT INTO usuarios (username, password, email, role) VALUES (?, ?, ?, ?)`,
-        ['admin', hashedPassword, 'admin@example.com', 'admin']
+        `INSERT OR IGNORE INTO usuarios (username, password, email, role) VALUES (?, ?, ?, ?)`,
+        ['admin', 'admin123', 'admin@example.com', 'admin']
       );
-      console.log('Usuario admin creado con éxito.');
-    } else {
-      console.log('El usuario admin ya existe.');
-    }
-    
-
-  }
-
-  async addMascota(nombre: string, edad: number, raza: string, color: string, userId: number): Promise<void> {
-    if (!this.dbInstance) throw new Error('Database not initialized');
-  
-    const query = `INSERT INTO mascotas (nombre, edad, raza, color, userId) VALUES (?, ?, ?, ?, ?)`;
-    try {
-      await this.dbInstance.executeSql(query, [nombre, edad, raza, color, userId]);
-      console.log('Mascota añadida con éxito:', nombre);
     } catch (error) {
-      console.error('Error al añadir mascota:', error);
-      throw error;
-    }
-  }
-  
-  async getMascotas() {
-    const query = `SELECT * FROM mascotas`;
-    try {
-      const res = await this.dbInstance?.executeSql(query, []);
-      const mascotas = [];
-      if (res) {
-        for (let i = 0; i < res.rows.length; i++) {
-          mascotas.push(res.rows.item(i));
-        }
-      }
-      console.log('Mascotas recuperadas:', mascotas);
-      return mascotas;
-    } catch (error) {
-      console.error('Error al obtener mascotas:', error);
-      return [];
+      console.error('Error initializing SQLite database:', error);
     }
   }
 
-  async validateUsername(username: string): Promise<boolean> {
-    if (!this.dbInstance) throw new Error('Database not initialized');
-
-    const query = `SELECT * FROM usuarios WHERE username = ?`;
+  async addMascota(nombre: string, edad: number, raza: string, color: string, photo: string | null, latitude: number | null, longitude: number | null, userId: number) {
+    if (!this.dbInstance) return;
     try {
-      const res = await this.dbInstance.executeSql(query, [username]);
-      return res.rows.length > 0; // Retorna true si existe
+      await this.dbInstance.executeSql(
+        `INSERT INTO mascotas (nombre, edad, raza, color, photo, latitude, longitude, userId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [nombre, edad, raza, color, photo, latitude, longitude, userId]
+      );
     } catch (error) {
-      console.error('Error validating username:', error);
-      throw error;
+      console.error('Error adding mascota:', error);
     }
   }
 
-  async getStatistics(): Promise<{ userCount: number; petCount: number }> {
-    if (!this.dbInstance) throw new Error('Database not initialized');
-  
-    const userCountQuery = `SELECT COUNT(*) as userCount FROM usuarios`;
-    const petCountQuery = `SELECT COUNT(*) as petCount FROM mascotas`;
-  
+  async getMascotasByUser(userId: number) {
+    if (!this.dbInstance) return [];
     try {
-      const userCountRes = await this.dbInstance.executeSql(userCountQuery, []);
-      const petCountRes = await this.dbInstance.executeSql(petCountQuery, []);
-  
-      const userCount = userCountRes.rows.item(0).userCount || 0;
-      const petCount = petCountRes.rows.item(0).petCount || 0;
-  
-      return { userCount, petCount };
-    } catch (error) {
-      console.error('Error fetching statistics:', error);
-      throw error;
-    }
-  }
-  
-  
-
-  async validateUser(username: string, password: string): Promise<any> {
-    if (!this.dbInstance) throw new Error('Database not initialized');
-  
-    const query = `SELECT * FROM usuarios WHERE username = ?`;
-    try {
-      const res = await this.dbInstance.executeSql(query, [username]);
-      if (res.rows.length > 0) {
-        const user = res.rows.item(0);
-        const hashedPassword = this.hashPassword(password);
-        if (hashedPassword === user.password) {
-          return { id: user.id, role: user.role };
-        }
-      }
-      return null;
-    } catch (error) {
-      console.error('Error validando usuario:', error);
-      throw error;
-    }
-  }
-  
-
-  hashPassword(password: string): string {
-    return CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
-  }
-  
-  async addUser(username: string, password: string, email: string): Promise<void> {
-    if (!this.dbInstance) throw new Error('Database not initialized');
-  
-    const hashedPassword = this.hashPassword(password); // Asegúrate de usar hashing
-    const query = `INSERT INTO usuarios (username, password, email) VALUES (?, ?, ?)`;
-    try {
-      await this.dbInstance.executeSql(query, [username, hashedPassword, email]);
-      console.log('Usuario agregado con éxito:', username);
-    } catch (error) {
-      console.error('Error al agregar el usuario:', error);
-      throw error;
-    }
-  }
-  
-  async getMascotasByUser(userId: number): Promise<any[]> {
-    if (!this.dbInstance) throw new Error('Database not initialized');
-  
-    const query = `SELECT * FROM mascotas WHERE userId = ?`;
-    try {
-      const res = await this.dbInstance.executeSql(query, [userId]);
+      const res = await this.dbInstance.executeSql(`SELECT * FROM mascotas WHERE userId = ?`, [userId]);
       const mascotas = [];
       for (let i = 0; i < res.rows.length; i++) {
         mascotas.push(res.rows.item(i));
       }
       return mascotas;
     } catch (error) {
-      console.error('Error fetching mascotas by user:', error);
-      throw error;
+      console.error('Error retrieving mascotas:', error);
+      return [];
     }
   }
-  
 
-  // Eliminar una mascota por ID
   async deleteMascota(id: number) {
-    const query = `DELETE FROM mascotas WHERE id = ?`;
-    return this.dbInstance?.executeSql(query, [id]);
+    if (!this.dbInstance) return;
+    try {
+      await this.dbInstance.executeSql(`DELETE FROM mascotas WHERE id = ?`, [id]);
+    } catch (error) {
+      console.error('Error deleting mascota:', error);
+    }
+  }
+
+  async validateUser(username: string, hashedPassword: string) {
+    if (!this.dbInstance) return null;
+    try {
+      const res = await this.dbInstance.executeSql(
+        `SELECT * FROM usuarios WHERE username = ? AND password = ?`,
+        [username, hashedPassword]
+      );
+      return res.rows.length > 0 ? res.rows.item(0) : null;
+    } catch (error) {
+      console.error('Error validating user:', error);
+      return null;
+    }
+  }
+
+  async validateUsername(username: string) {
+    if (!this.dbInstance) return null;
+    try {
+      const res = await this.dbInstance.executeSql(
+        `SELECT * FROM usuarios WHERE username = ?`,
+        [username]
+      );
+      return res.rows.length > 0 ? res.rows.item(0) : null;
+    } catch (error) {
+      console.error('Error validating username:', error);
+      return null;
+    }
+  }
+
+  async addUser(username: string, password: string, email: string) {
+    if (!this.dbInstance) return;
+    try {
+      await this.dbInstance.executeSql(
+        `INSERT INTO usuarios (username, password, email) VALUES (?, ?, ?)`,
+        [username, password, email]
+      );
+    } catch (error) {
+      console.error('Error adding user:', error);
+    }
+  }
+
+  async savePosts(posts: { id: number; title: string; body: string }[]) {
+    if (!this.dbInstance) return;
+    try {
+      for (const post of posts) {
+        await this.dbInstance.executeSql(
+          `INSERT OR REPLACE INTO posts (id, title, body) VALUES (?, ?, ?)`,
+          [post.id, post.title, post.body]
+        );
+      }
+    } catch (error) {
+      console.error('Error saving posts:', error);
+    }
+  }
+
+  async getPosts(): Promise<{ id: number; title: string; body: string }[]> {
+    if (!this.dbInstance) return [];
+    try {
+      const res = await this.dbInstance.executeSql('SELECT * FROM posts', []);
+      const posts = [];
+      for (let i = 0; i < res.rows.length; i++) {
+        posts.push(res.rows.item(i));
+      }
+      return posts;
+    } catch (error) {
+      console.error('Error retrieving posts:', error);
+      return [];
+    }
   }
 }
