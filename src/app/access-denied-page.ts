@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-access-denied',
-  templateUrl: './access-denied.page.html',
+  templateUrl: './access-denied-page.html',
   styleUrls: ['./access-denied.page.scss'],
 })
 export class AccessDeniedPage {

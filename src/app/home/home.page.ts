@@ -15,19 +15,19 @@ export class HomePage implements OnInit {
   constructor(private apiService: ApiService, private sqliteService: SqliteService) {}
 
   async ngOnInit() {
-    await this.sqliteService.initializeDatabase(); // Ensure database is ready
+    await this.sqliteService.initializeDatabase();
     this.loadPosts();
   }
 
   async loadPosts() {
     try {
       const data = await this.apiService.fetchPosts().toPromise();
-      this.posts = data || []; // Ensure posts is always an array
-      await this.sqliteService.savePosts(this.posts); // Save posts for offline use
+      this.posts = data || [];
+      await this.sqliteService.savePosts(this.posts);
     } catch (error) {
       console.error('Error loading posts from API:', error);
       this.errorMessage = 'Failed to load data. Displaying offline content.';
-      this.posts = await this.sqliteService.getPosts(); // Load offline data if API fails
+      this.posts = await this.sqliteService.getPosts();
     }
   }
 }

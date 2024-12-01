@@ -9,7 +9,7 @@ import { SqliteService } from '../services/sqlite.service';
 })
 export class InicioPage implements OnInit {
   mascotas: any[] = [];
-  userId: number = 1; // ID del usuario logueado (esto debería configurarse dinámicamente)
+  userId: number = 1;
 
   constructor(
     private animationCtrl: AnimationController,
@@ -32,7 +32,6 @@ export class InicioPage implements OnInit {
 
   async cargarMascotas() {
     try {
-      // Obtener mascotas del usuario logueado
       this.mascotas = await this.sqliteService.getMascotasByUser(this.userId);
       console.log('Mascotas cargadas:', this.mascotas);
     } catch (error) {
@@ -43,7 +42,6 @@ export class InicioPage implements OnInit {
   async eliminarMascota(id: number) {
     try {
       await this.sqliteService.deleteMascota(id);
-      // Actualiza la lista después de eliminar
       this.mascotas = await this.sqliteService.getMascotasByUser(this.userId);
       console.log('Mascota eliminada con éxito:', id);
     } catch (error) {

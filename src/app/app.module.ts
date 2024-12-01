@@ -22,13 +22,13 @@ export function HttpLoaderFactory(http: HttpClient) {
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    HttpClientModule, // Asegúrate de importar HttpClientModule
+    HttpClientModule,
     IonicStorageModule.forRoot(),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
-        deps: [HttpClient], // Esto requiere HttpClientModule arriba
+        deps: [HttpClient], 
       },
     }),
   ],

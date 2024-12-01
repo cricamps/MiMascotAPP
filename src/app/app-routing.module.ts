@@ -11,13 +11,11 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    loadChildren: () => import('./login/login.module').then(m => m.LoginPageModule),
-    canActivate: [NoAuthGuard]
+    loadChildren: () => import('./login/login.module').then(m => m.LoginPageModule)
   },
   {
     path: 'registro',
-    loadChildren: () => import('./registro/registro.module').then(m => m.RegistroPageModule),
-    canActivate: [NoAuthGuard]
+    loadChildren: () => import('./registro/registro.module').then(m => m.RegistroPageModule)
   },
   {
     path: 'home',
@@ -38,8 +36,7 @@ const routes: Routes = [
   {
     path: 'lista-usuarios',
     loadChildren: () => import('./lista-usuarios/lista-usuarios.module').then(m => m.ListaUsuariosPageModule),
-    canActivate: [AuthGuard],
-    data: { role: 'admin' }
+    canActivate: [AuthGuard]
   },
   {
     path: 'access-denied',
