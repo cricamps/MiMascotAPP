@@ -1,14 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AuthGuard } from '../guards/auth.guard';
-import { HomePage } from './home.page';
+import { AccessDeniedPage } from './access-denied.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: HomePage,
-    canActivate: [AuthGuard],
-    data: { role: 'admin' }
+    component: AccessDeniedPage
   }
 ];
 
@@ -16,4 +13,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class HomePageRoutingModule {}
+export class AccessDeniedPageRoutingModule {}

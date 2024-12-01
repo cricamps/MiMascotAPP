@@ -1,5 +1,5 @@
-
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { SqliteService } from '../services/sqlite.service';
 
 @Component({
@@ -10,22 +10,27 @@ import { SqliteService } from '../services/sqlite.service';
 export class AgregarMascotaPage {
   mascota = {
     nombre: '',
-    edad: 0, // Default to 0 to avoid null issues
+    edad: null,
     raza: '',
     color: '',
     photo: null,
     latitude: null,
     longitude: null,
   };
-  userId = 1; // Example user ID
+  userId: number;
 
-  constructor(private sqliteService: SqliteService) {}
+  constructor(private sqliteService: SqliteService, private router: Router) {}
+
+  async ngOnInit() {
+    // Obtener el userId del almacenamiento local o sesión
+    this.userId = /* Lógica para obtener el ID del usuario actual */;
+  }
 
   async agregarMascota() {
     try {
       await this.sqliteService.addMascota(
         this.mascota.nombre,
-        this.mascota.edad || 0, // Ensure edad is a number
+        this.mascota.edad,
         this.mascota.raza,
         this.mascota.color,
         this.mascota.photo || null,
@@ -34,6 +39,7 @@ export class AgregarMascotaPage {
         this.userId
       );
       console.log('Mascota agregada con éxito');
+      this.router.navigate(['/inicio']);
     } catch (error) {
       console.error('Error al agregar mascota:', error);
     }
