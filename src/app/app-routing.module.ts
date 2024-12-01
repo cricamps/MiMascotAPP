@@ -40,7 +40,7 @@ const routes: Routes = [
   },
   {
     path: 'access-denied',
-    loadChildren: () => import('./pages/access-denied/access-denied.module').then(m => m.AccessDeniedPageModule)
+    loadChildren: () => import('./access-denied/access-denied.module').then(m => m.AccessDeniedPageModule)
   },
   {
     path: '**',

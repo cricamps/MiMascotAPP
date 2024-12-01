@@ -4,7 +4,7 @@ import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-access-denied',
-  templateUrl: './access-denied-page.html',
+  templateUrl: './access-denied.page.html',
   styleUrls: ['./access-denied.page.scss'],
 })
 export class AccessDeniedPage {

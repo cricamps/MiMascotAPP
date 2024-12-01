@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AccessDeniedPage } from './access-denied-page';
+import { AccessDeniedPage } from './access-denied.page';
 
 const routes: Routes = [
   {
