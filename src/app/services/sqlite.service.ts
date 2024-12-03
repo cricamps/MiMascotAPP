@@ -95,17 +95,23 @@ export class SqliteService {
     }
   }
 
-  async validateUser(username: string, hashedPassword: string) {
-    if (!this.dbInstance) return null;
+  async validateUser(username: string, password: string) {
+    if (!this.dbInstance) {
+      console.error('Database not initialized');
+      return null;
+    }    
     try {
+      console.log('Executing SQL query for user validation');
       const res = await this.dbInstance.executeSql(
         `SELECT * FROM usuarios WHERE username = ? AND password = ?`,
-        [username, hashedPassword]
+        [username, password]
       );
+      console.log('Query result:', res.rows.length); 
+      
       return res.rows.length > 0 ? res.rows.item(0) : null;
     } catch (error) {
-      console.error('Error validating user:', error);
-      return null;
+      console.error('Error in validateUser:', error);
+      throw error;
     }
   }
 

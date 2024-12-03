@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SqliteService } from '../services/sqlite.service';
+import { AlertController } from '@ionic/angular'; 
 
 @Component({
   selector: 'app-login',
@@ -12,23 +13,48 @@ export class LoginPage {
   password: string = '';
   error: string | null = null;
 
-  constructor(private sqliteService: SqliteService, private router: Router) {}
+  constructor(
+    private sqliteService: SqliteService, 
+    private router: Router,
+    private alertController: AlertController 
+  ) {}
 
   async login() {
+    console.log('Iniciando login...'); 
+    
+    if (!this.username || !this.password) {
+      this.showAlert('Error', 'Por favor, completa todos los campos');
+      return;
+    }
+
     try {
+      console.log('Validando usuario:', this.username); 
       const user = await this.sqliteService.validateUser(this.username, this.password);
+      console.log('Respuesta de validación:', user);
+
       if (user) {
+        console.log('Usuario validado, rol:', user.role);
         if (user.role === 'admin') {
-          this.router.navigate(['/home']); // Navega a home para administradores
+          await this.router.navigate(['/home']);
         } else {
-          this.router.navigate(['/inicio']); // Navega a inicio para usuarios normales
+          await this.router.navigate(['/inicio']);
         }
       } else {
-        alert('Usuario o contraseña incorrectos.');
+        await this.showAlert('Error', 'Usuario o contraseña incorrectos.');
       }
     } catch (error) {
       console.error('Error durante el inicio de sesión:', error);
+      await this.showAlert('Error', 'Hubo un problema al iniciar sesión');
     }
+  }
+
+  async showAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   clearField(field: 'username' | 'password'): void {
