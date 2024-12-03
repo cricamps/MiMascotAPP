@@ -1,42 +1,27 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Login</ion-title>
+  <ion-toolbar>
+    <ion-title>Iniciar Sesión</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Inicia Sesión</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <form (submit)="login()">
-        <ion-input
-          placeholder="Usuario"
-          type="text"
-          clearInput
-          [(ngModel)]="username"
-          name="username"
-          required
-          (click)="clearField('username')"
-        ></ion-input>
-        <ion-input
-          placeholder="Contraseña"
-          type="password"
-          clearInput
-          [(ngModel)]="password"
-          name="password"
-          required
-          (click)="clearField('password')"
-        ></ion-input>
-        <ion-button expand="block" color="secondary" type="submit">
-          Ingresar
-        </ion-button>
-        <ion-button expand="block" color="tertiary" routerLink="/registro">
-          Crear Cuenta
-        </ion-button>        
-      </form>
-      <p *ngIf="error" class="error-message">{{ error }}</p>
-    </ion-card-content>
-  </ion-card>
+  <form (ngSubmit)="login()" #loginForm="ngForm">
+    <ion-item>
+      <ion-label position="floating">Usuario</ion-label>
+      <ion-input [(ngModel)]="username" name="username" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
+    </ion-item>
+
+    <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="loginForm.invalid">
+      Ingresar
+    </ion-button>
+  </form>
+
+  <ion-button expand="block" fill="clear" routerLink="/registro">
+    Crear Cuenta
+  </ion-button>
 </ion-content>

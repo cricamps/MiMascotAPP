@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SqliteService } from '../services/sqlite.service';
+import * as CryptoJS from 'crypto-js';
 
 @Component({
   selector: 'app-registro',
@@ -15,27 +16,23 @@ export class RegistroPage {
 
   constructor(private sqliteService: SqliteService, private router: Router) {}
 
+  private hashPassword(password: string): string {
+    return CryptoJS.SHA256(password).toString();
+  }
+
   async register() {
-    if (!this.username || !this.password || !this.email) {
-      this.error = 'Todos los campos son obligatorios.';
-      return;
-    }
-  
+    const hashedPassword = this.hashPassword(this.password);
     try {
       const existingUser = await this.sqliteService.validateUsername(this.username);
       if (existingUser) {
         this.error = 'El nombre de usuario ya está registrado.';
         return;
       }
-  
-      await this.sqliteService.addUser(this.username, this.password, this.email);
-      console.log('Usuario registrado con éxito.');
-      this.error = null;
+      await this.sqliteService.addUser(this.username, hashedPassword, this.email);
       this.router.navigate(['/login']);
     } catch (error) {
-      console.error('Error al registrar el usuario:', error);
-      this.error = 'No se pudo registrar el usuario. Verifica la consola para más detalles.';
+      console.error('Error:', error);
+      this.error = 'Error al registrar usuario.';
     }
   }
-  
-}  
+}

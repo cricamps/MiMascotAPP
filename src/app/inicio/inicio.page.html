@@ -1,28 +1,54 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Mis Mascotas</ion-title>
+    <ion-title>Inicio</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
   </ion-toolbar>
-</ion-header>
-
-<ion-content>
+ </ion-header>
+ 
+ <ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+ 
   <div class="animated-list">
     <ion-list>
-      <ion-item *ngFor="let mascota of mascotas">
-        <ion-label>
-          <h2>{{ mascota.nombre }}</h2>
-          <p>Edad: {{ mascota.edad }} años</p>
-          <p>Raza: {{ mascota.raza }}</p>
-          <p>Color: {{ mascota.color }}</p>
-        </ion-label>
-        <ion-button fill="outline" color="danger" (click)="eliminarMascota(mascota.id)">
-          Eliminar
-        </ion-button>
-      </ion-item>
+      <ion-item-sliding *ngFor="let mascota of mascotas">
+        <ion-item>
+          <ion-avatar slot="start">
+            <img [src]="mascota.photo || 'assets/default-pet.png'" alt="mascota">
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ mascota.nombre }}</h2>
+            <ion-text color="medium">
+              <p>
+                <ion-icon name="time-outline"></ion-icon> {{ mascota.edad }} años<br>
+                <ion-icon name="paw-outline"></ion-icon> {{ mascota.raza }}<br>
+                <ion-icon name="color-palette-outline"></ion-icon> {{ mascota.color }}
+              </p>
+            </ion-text>
+          </ion-label>
+        </ion-item>
+ 
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="eliminarMascota(mascota.id)">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
     </ion-list>
+ 
+    <div class="empty-state" *ngIf="mascotas.length === 0">
+      <ion-icon name="paw"></ion-icon>
+      <h2>No hay mascotas registradas</h2>
+      <p>Agrega tu primera mascota</p>
+    </div>
   </div>
-  <div class="boton-agregar">
-    <ion-button expand="block" color="primary" routerLink="/agregar-mascota">
-      Agregar Mascota
-    </ion-button>
-  </div>  
-</ion-content>
+ 
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button routerLink="/agregar-mascota">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+ </ion-content>

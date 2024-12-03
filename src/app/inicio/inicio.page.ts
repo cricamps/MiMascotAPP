@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AnimationController } from '@ionic/angular';
 import { SqliteService } from '../services/sqlite.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-inicio',
@@ -13,7 +14,8 @@ export class InicioPage implements OnInit {
 
   constructor(
     private animationCtrl: AnimationController,
-    private sqliteService: SqliteService
+    private sqliteService: SqliteService,
+    private authService: AuthService
   ) {}
 
   async ngOnInit() {
