@@ -23,12 +23,7 @@
     font-size: 14px;
     color: #333;
   }
-  
-  .boton-agregar {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-  }
+
   
   ion-list {
     margin: 20px;
@@ -38,8 +33,65 @@
     border-bottom: 1px solid #ccc;
     margin-bottom: 10px;
   }
-  
-  .boton-agregar {
+    
+  .add-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-top: 20px;
+    padding: 20px;
   }
   
+  .add-button-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .plus-button {
+    --padding-start: 0;
+    --padding-end: 0;
+    width: 50px;
+    height: 50px;
+    --border-radius: 12px;
+    --background: #3880ff;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    ion-icon {
+      font-size: 30px;
+      color: white;
+      --ionicon-stroke-width: 48px;
+    }
+  }
+  
+  .add-text {
+    margin-top: 8px;
+    color: var(--ion-color-medium);
+    font-size: 14px;
+  }
+  
+  .custom-button {
+    --border-radius: 15px;
+    width: 200px;
+    height: 80px;
+    
+    .button-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      
+      ion-icon {
+        font-size: 24px;
+        margin-bottom: 5px;
+      }
+      
+      span {
+        font-size: 14px;
+      }
+    }
+  }

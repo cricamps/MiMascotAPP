@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AnimationController } from '@ionic/angular';
 import { SqliteService } from '../services/sqlite.service';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-inicio',
@@ -15,7 +16,8 @@ export class InicioPage implements OnInit {
   constructor(
     private animationCtrl: AnimationController,
     private sqliteService: SqliteService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -25,6 +27,14 @@ export class InicioPage implements OnInit {
       this.playAnimation();
     } catch (error) {
       console.error('Error en ngOnInit:', error);
+    }
+  }
+
+  async doRefresh(event: any) {
+    try {
+      await this.cargarMascotas();
+    } finally {
+      event.target.complete();
     }
   }
 
@@ -49,6 +59,10 @@ export class InicioPage implements OnInit {
     } catch (error) {
       console.error('Error al eliminar mascota:', error);
     }
+  }
+
+  goToAgregarMascota() {
+    this.router.navigate(['/agregar-mascota']);
   }
 
   playAnimation() {

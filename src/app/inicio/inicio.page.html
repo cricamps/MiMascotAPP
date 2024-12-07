@@ -1,9 +1,9 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Inicio</ion-title>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
+    <ion-title>Mis Mascotas</ion-title>
   </ion-toolbar>
  </ion-header>
  
@@ -13,42 +13,30 @@
   </ion-refresher>
  
   <div class="animated-list">
-    <ion-list>
-      <ion-item-sliding *ngFor="let mascota of mascotas">
-        <ion-item>
-          <ion-avatar slot="start">
-            <img [src]="mascota.photo || 'assets/default-pet.png'" alt="mascota">
-          </ion-avatar>
-          <ion-label>
-            <h2>{{ mascota.nombre }}</h2>
-            <ion-text color="medium">
-              <p>
-                <ion-icon name="time-outline"></ion-icon> {{ mascota.edad }} años<br>
-                <ion-icon name="paw-outline"></ion-icon> {{ mascota.raza }}<br>
-                <ion-icon name="color-palette-outline"></ion-icon> {{ mascota.color }}
-              </p>
-            </ion-text>
-          </ion-label>
-        </ion-item>
- 
-        <ion-item-options side="end">
-          <ion-item-option color="danger" (click)="eliminarMascota(mascota.id)">
-            <ion-icon slot="icon-only" name="trash"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
+    <ion-list *ngIf="mascotas.length > 0">
+      <ion-item *ngFor="let mascota of mascotas">
+        <ion-label>
+          <h2>{{ mascota.nombre }}</h2>
+          <p>{{ mascota.edad }} años</p>
+          <p>{{ mascota.raza }}</p>
+          <p>{{ mascota.color }}</p>
+        </ion-label>
+      </ion-item>
     </ion-list>
  
     <div class="empty-state" *ngIf="mascotas.length === 0">
-      <ion-icon name="paw"></ion-icon>
+      <ion-icon name="paw" size="large"></ion-icon>
       <h2>No hay mascotas registradas</h2>
       <p>Agrega tu primera mascota</p>
     </div>
   </div>
  
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button routerLink="/agregar-mascota">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+  <div class="add-button-container">
+    <div class="add-button-wrapper" (click)="goToAgregarMascota()">
+      <ion-button class="plus-button" fill="clear">
+        <ion-icon name="add"></ion-icon>
+      </ion-button>
+      <p class="add-text">Agregar Mascota</p>
+    </div>
+  </div>
  </ion-content>

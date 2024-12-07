@@ -42,6 +42,13 @@ const routes: Routes = [
     path: 'access-denied',
     loadChildren: () => import('./access-denied/access-denied.module').then(m => m.AccessDeniedPageModule)
   },
+
+  {
+    path: 'agregar-mascota',
+    loadChildren: () => import('./agregar-mascota/agregar-mascota.module').then(m => m.AgregarMascotaPageModule),
+    canActivate: [AuthGuard]
+  },
+
   {
     path: '**',
     redirectTo: 'login'
