@@ -1,37 +1,29 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { Observable } from 'rxjs';
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
+import { MascotasService } from '../servicios/mascotas/mascotas.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
-
-  async canActivate(
-    route: ActivatedRouteSnapshot,
+  constructor(private router: Router, private mascotasService:MascotasService) {}
+  canActivate(
+    next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Promise<boolean> {
-    const isAuthenticated = await this.authService.isAuthenticated();
-    
-    if (!isAuthenticated) {
-      await this.router.navigate(['/login'], {
-        queryParams: { returnUrl: state.url }
+  ): boolean | Observable<boolean> | Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      firebase.auth().onAuthStateChanged((user: firebase.User) => {
+        if (user) {
+          resolve(true);
+        } else {
+          this.router.navigate(['/login']); 
+          this.mascotasService.removeUltimaMascotaLocal();
+          resolve(false);
+        }
       });
-      return false;
-    }
-
-    if (route.data['role']) {
-      const hasRole = await this.authService.hasRole(route.data['role']);
-      if (!hasRole) {
-        await this.router.navigate(['/access-denied']);
-        return false;
-      }
-    }
-
-    return true;
+    });
   }
 }

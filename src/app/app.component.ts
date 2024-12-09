@@ -1,31 +1,78 @@
 import { Component } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { SqliteService } from './services/sqlite.service'; // Importa el servicio SQLite
+
+import { Platform } from '@ionic/angular';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
+import * as firebase from 'firebase';
+import { environment } from 'src/environments/environment';
+import { Usuario } from './servicios/Usuarios/usuarios.service';
+import { AuthService } from './servicios/Auth/auth.service';
+import { Router } from '@angular/router';
+import { MascotasService } from './servicios/mascotas/mascotas.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss'],
+  styleUrls: ['app.component.scss']
 })
 export class AppComponent {
+  public appPages = [
+    {
+      title: 'Mascotas',
+      url: '/mascotas',
+      icon: 'paw'
+    },
+    {
+      title: 'App - Info',
+      url: '/creditos',
+      icon: 'information-circle'
+    }
+  ];
+  usuario : Usuario = new Usuario();
+
   constructor(
-    private translate: TranslateService,
-    private sqliteService: SqliteService // Inyecta el servicio SQLite
+    private platform: Platform,
+    private splashScreen: SplashScreen,
+    private statusBar: StatusBar,
+    private authService: AuthService,
+    private router:Router, 
+    private mascotaService: MascotasService,
   ) {
     this.initializeApp();
   }
 
-  async initializeApp() {
-    // Configuración de idiomas
-    this.translate.setDefaultLang('es');
-    this.translate.use('es');
+  initializeApp() {
+    this.platform.ready().then(() => {
 
-    // Inicialización de la base de datos
-    try {
-      await this.sqliteService.initializeDatabase();
-      console.log('Base de datos inicializada correctamente.');
-    } catch (error) {
-      console.error('Error al inicializar la base de datos:', error);
-    }
+     let esApp = this.platform.is('hybrid');
+
+     if(esApp){
+      this.statusBar.styleLightContent();
+      this.suscribirseSalir()
+     }
+            
+      this.mascotaService.getUltimaMascotaId().then(res => {
+          if(res != null){
+            this.router.navigate(['mascota']);
+          }else{
+            this.router.navigate(['mascotas']);
+          }
+      });
+      if(esApp){
+        this.splashScreen.hide();
+      }
+    });
+  }
+  suscribirseSalir(){
+    this.platform.backButton.subscribe(async () => {
+      if ((this.router.isActive('/mascota', true) && this.router.url === '/mascota') || (this.router.isActive('/mascotas', true) && this.router.url === '/mascotas')) {
+        navigator['app'].exitApp();
+      }
+    });
+  }
+
+  logout(){
+    this.authService.doLogout();
+    this.usuario = new Usuario();
   }
 }

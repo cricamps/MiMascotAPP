@@ -1,59 +1,24 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './guards/auth.guard';
-import { NoAuthGuard } from './guards/no-auth.guard';
+import { AuthGuard } from './guards/auth.guard'
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'mascotas',
     pathMatch: 'full'
   },
-  {
-    path: 'login',
-    loadChildren: () => import('./login/login.module').then(m => m.LoginPageModule)
-  },
-  {
-    path: 'registro',
-    loadChildren: () => import('./registro/registro.module').then(m => m.RegistroPageModule)
-  },
-  {
-    path: 'home',
-    loadChildren: () => import('./home/home.module').then(m => m.HomePageModule),
-    canActivate: [AuthGuard],
-    data: { role: 'admin' }
-  },
-  {
-    path: 'inicio',
-    loadChildren: () => import('./inicio/inicio.module').then(m => m.InicioPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'perfil',
-    loadChildren: () => import('./perfil/perfil.module').then(m => m.PerfilPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'lista-usuarios',
-    loadChildren: () => import('./lista-usuarios/lista-usuarios.module').then(m => m.ListaUsuariosPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'access-denied',
-    loadChildren: () => import('./access-denied/access-denied.module').then(m => m.AccessDeniedPageModule)
-  },
-
-  {
-    path: 'agregar-mascota',
-    loadChildren: () => import('./agregar-mascota/agregar-mascota.module').then(m => m.AgregarMascotaPageModule),
-    canActivate: [AuthGuard]
-  },
-
-  {
-    path: '**',
-    redirectTo: 'login'
-  }
-];
+  { path: 'mascotas', loadChildren: () => import('./paginas/mascotas/mascotas.module').then(m => m.MascotasPageModule), canActivate: [AuthGuard] },
+  { path: 'login', loadChildren: () => import('./paginas/login/login.module').then(m => m.LoginPageModule) },
+  { path: 'mascota', loadChildren: () => import('./paginas/mascota/mascota.module').then(m => m.MascotaPageModule) },
+  { path: 'mascota/:id', loadChildren: () => import('./paginas/mascota/mascota.module').then(m => m.MascotaPageModule), canActivate: [AuthGuard]  },
+  { path: 'mascota-detalle', loadChildren: () => import('./paginas/mascota-detalle/mascota-detalle.module').then(m => m.MascotaDetallePageModule), canActivate: [AuthGuard] },
+  { path: 'mascota-detalle/:id', loadChildren: () => import('./paginas/mascota-detalle/mascota-detalle.module').then(m => m.MascotaDetallePageModule), canActivate: [AuthGuard] },
+  { path: 'mascota-tratamiento/:tipo/:idMascota', loadChildren: () => import('./paginas/mascota-tratamiento/mascota-tratamiento.module').then(m => m.MascotaTratamientoPageModule), canActivate: [AuthGuard] },
+  { path: 'mascota-tratamiento/:tipo/:idMascota/:id', loadChildren: () => import('./paginas/mascota-tratamiento/mascota-tratamiento.module').then(m => m.MascotaTratamientoPageModule), canActivate: [AuthGuard] },
+  { path: 'mascota-tratamientos/:tipo/:id', loadChildren: () => import('./paginas/mascota-tratamientos/mascota-tratamientos.module').then(m => m.MascotaTratamientosPageModule), canActivate: [AuthGuard] },
+  { path: 'registro', loadChildren: () => import('./paginas/registro/registro.module').then(m => m.RegistroPageModule) },
+  ];
 
 @NgModule({
   imports: [
