@@ -1,0 +1,45 @@
+.animated-list {
+    opacity: 0; 
+    transform: translateX(-100px); 
+    transition: all 1s ease-in-out; 
+  }
+  
+  .mascotas-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .mascota-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .mascota-item p {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .boton-agregar {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  ion-list {
+    margin: 20px;
+  }
+  
+  ion-item {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+  
+  .boton-agregar {
+    margin-top: 20px;
+  }
+  

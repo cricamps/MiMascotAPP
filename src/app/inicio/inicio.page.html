@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mis Mascotas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="animated-list">
+    <ion-list>
+      <ion-item *ngFor="let mascota of mascotas">
+        <ion-label>
+          <h2>{{ mascota.nombre }}</h2>
+          <p>Edad: {{ mascota.edad }} años</p>
+          <p>Raza: {{ mascota.raza }}</p>
+          <p>Color: {{ mascota.color }}</p>
+        </ion-label>
+        <ion-button fill="outline" color="danger" (click)="eliminarMascota(mascota.id)">
+          Eliminar
+        </ion-button>
+      </ion-item>
+    </ion-list>
+  </div>
+  <div class="boton-agregar">
+    <ion-button expand="block" color="primary" routerLink="/agregar-mascota">
+      Agregar Mascota
+    </ion-button>
+  </div>  
+</ion-content>
