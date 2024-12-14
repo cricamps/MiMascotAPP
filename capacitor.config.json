@@ -1,0 +1,6 @@
+{
+  "appId": "cl.camps.mimascotapp",
+  "appName": "MiMascotApp",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}

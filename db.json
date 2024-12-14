@@ -1,0 +1,7 @@
+{
+    "mascotas": [
+      { "id": 1, "nombre": "luna", "edad": 3, "foto": "" },
+      { "id": 2, "nombre": "jazmin", "edad": 5, "foto": "" }
+    ]
+  }
+  

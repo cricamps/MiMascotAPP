@@ -7,7 +7,7 @@
 <ion-content>
   <div class="animated-list">
     <ion-list>
-      <ion-item *ngFor="let mascota of mascotas">
+      <ion-item *ngFor="let mascota of mascotas" (click)="verPerfilMascota(mascota)">
         <ion-label>
           <h2>{{ mascota.nombre }}</h2>
           <p>Edad: {{ mascota.edad }} años</p>

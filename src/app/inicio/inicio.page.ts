@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AnimationController } from '@ionic/angular';
 import { SqliteService } from '../services/sqlite.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-inicio',
@@ -13,7 +14,8 @@ export class InicioPage implements OnInit {
 
   constructor(
     private animationCtrl: AnimationController,
-    private sqliteService: SqliteService
+    private sqliteService: SqliteService,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -32,7 +34,6 @@ export class InicioPage implements OnInit {
 
   async cargarMascotas() {
     try {
-      // Obtener mascotas del usuario logueado
       this.mascotas = await this.sqliteService.getMascotasByUser(this.userId);
       console.log('Mascotas cargadas:', this.mascotas);
     } catch (error) {
@@ -40,12 +41,19 @@ export class InicioPage implements OnInit {
     }
   }
 
+  verPerfilMascota(mascota: any) {
+    try {
+      console.log('Navegando al perfil de la mascota:', mascota);
+        this.router.navigate(['/perfil'], { state: { mascota } });
+      } catch (error) {
+        console.error('Error al navegar al perfil de la mascota:', error);
+      }
+  }
+
   async eliminarMascota(id: number) {
     try {
       await this.sqliteService.deleteMascota(id);
-      // Actualiza la lista después de eliminar
       this.mascotas = await this.sqliteService.getMascotasByUser(this.userId);
-      console.log('Mascota eliminada con éxito:', id);
     } catch (error) {
       console.error('Error al eliminar mascota:', error);
     }
@@ -53,7 +61,6 @@ export class InicioPage implements OnInit {
 
   playAnimation() {
     const element = document.querySelector('.animated-list');
-
     if (element) {
       const animation = this.animationCtrl.create()
         .addElement(element)

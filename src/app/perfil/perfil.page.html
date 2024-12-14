@@ -30,4 +30,21 @@
       </ion-list>
     </ion-card-content>
   </ion-card>
+  
+  <div class="foto-container">
+    <img *ngIf="mascota.foto" [src]="mascota.foto" alt="Foto de {{ mascota.nombre }}" class="foto-mascota" />
+    <p *ngIf="!mascota.foto">Sin foto</p>
+  </div>
+
+  <ion-button expand="block" color="primary" (click)="tomarFoto()">Tomar Foto</ion-button>
+  <ion-button expand="block" color="secondary" (click)="mostrarImagenes()">Elegir Imagen</ion-button>
+
+  <ion-grid *ngIf="mostrarImagenesOpciones">
+    <ion-row>
+      <ion-col size="4" *ngFor="let imagen of imagenesPrecargadas">
+        <img [src]="imagen" (click)="elegirFoto(imagen)" class="imagen-opcion" />
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
 </ion-content>
