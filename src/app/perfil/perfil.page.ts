@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { StorageService } from '../services/storage.service';
+import { AnimationController } from '@ionic/angular';
 
 @Component({
   selector: 'app-perfil',
@@ -17,10 +18,11 @@ export class PerfilPage implements OnInit {
     'assets/img/mascota3.png',
   ];
 
-  constructor(private router: Router, private storageService: StorageService) {}
+  constructor(private router: Router, private storageService: StorageService,private animationCtrl: AnimationController) {}
 
   async ngOnInit() {
     const navigation = await this.router.getCurrentNavigation();
+    this.playAnimation();
     if (navigation?.extras?.state?.['mascota']) {
       this.mascota = navigation.extras.state['mascota'];
       console.log('Datos de la mascota recibidos:', this.mascota);
@@ -67,6 +69,19 @@ export class PerfilPage implements OnInit {
       await this.storageService.setItem(`mascota_${this.mascota.id}`, { foto: this.mascota.foto });
       console.log('Cambios guardados para la mascota:', this.mascota);
       this.router.navigate(['/inicio']);
+    }
+  }
+  playAnimation() {
+    const element = document.querySelector('.profile-container');
+    if (element) {
+      const animation = this.animationCtrl.create()
+        .addElement(element)
+        .duration(800)
+        .fromTo('opacity', '0', '1')
+        .fromTo('transform', 'scale(0.5)', 'scale(1)');
+      animation.play();
+    } else {
+      console.error('Elemento no encontrado: .profile-container');
     }
   }
 }

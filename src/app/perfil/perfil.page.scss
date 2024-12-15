@@ -13,3 +13,8 @@
     border-color: #3880ff;
   }
   
+  .profile-container {
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.8s ease-in-out;
+  }
