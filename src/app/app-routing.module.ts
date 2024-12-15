@@ -34,9 +34,18 @@ const routes: Routes = [
   {
     path: 'agregar-mascota',
     loadChildren: () => import('./agregar-mascota/agregar-mascota.module').then( m => m.AgregarMascotaPageModule)
-  },  {
+  },
+  {
     path: 'registro',
     loadChildren: () => import('./registro/registro.module').then( m => m.RegistroPageModule)
+  },
+  {
+    path: 'api',
+    loadChildren: () => import('./api/api.module').then((m) => m.ApiPageModule),
+  },
+  {
+    path: 'geolocalizacion',
+    loadChildren: () => import('./geolocalizacion/geolocalizacion.module').then((m) => m.GeolocalizacionPageModule),
   },
 
 ];

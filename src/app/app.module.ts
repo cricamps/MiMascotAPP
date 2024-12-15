@@ -11,6 +11,7 @@ import { IonicStorageModule } from '@ionic/storage-angular';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { SQLite } from '@ionic-native/sqlite/ngx';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -22,19 +23,20 @@ export function HttpLoaderFactory(http: HttpClient) {
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    HttpClientModule, // Asegúrate de importar HttpClientModule
+    HttpClientModule,
     IonicStorageModule.forRoot(),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
-        deps: [HttpClient], // Esto requiere HttpClientModule arriba
+        deps: [HttpClient],
       },
     }),
   ],
   providers: [
     SQLite,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    Geolocation,
   ],
   bootstrap: [AppComponent],
 })

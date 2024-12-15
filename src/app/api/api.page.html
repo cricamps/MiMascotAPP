@@ -1,0 +1,23 @@
+<ion-header>
+    <ion-toolbar>
+      <ion-title>Datos de la API</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content>
+    <ion-button expand="block" color="primary" (click)="accederApi()">Obtener datos de la API</ion-button>
+  
+    <div *ngIf="apiData && apiData.length > 0">
+      <h3>Datos obtenidos de la API:</h3>
+      <ion-list>
+        <ion-item *ngFor="let item of apiData">
+          {{ item.nombre }} (Edad: {{ item.edad }} años)
+        </ion-item>
+      </ion-list>
+    </div>
+  
+    <div *ngIf="apiData && apiData.length === 0">
+      <p>No hay datos disponibles en la API.</p>
+    </div>
+  </ion-content>
+  

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AnimationController } from '@ionic/angular';
 import { SqliteService } from '../services/sqlite.service';
 import { Router } from '@angular/router';
+import { ApiService } from '../services/api.service';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 @Component({
   selector: 'app-inicio',
@@ -10,12 +12,16 @@ import { Router } from '@angular/router';
 })
 export class InicioPage implements OnInit {
   mascotas: any[] = [];
-  userId: number = 1; // ID del usuario logueado (esto debería configurarse dinámicamente)
+  userId: number = 1;
+  apiData: any[] = [];
+  geolocalizacion: { lat: number; lng: number } | null = null;
 
   constructor(
     private animationCtrl: AnimationController,
     private sqliteService: SqliteService,
-    private router: Router
+    private router: Router,
+    private apiService: ApiService,
+    private geolocation: Geolocation
   ) {}
 
   async ngOnInit() {
@@ -71,5 +77,30 @@ export class InicioPage implements OnInit {
     } else {
       console.error('Elemento no encontrado: .animated-list');
     }
+  }
+  accederApi() {
+    this.apiService.getMascotas().subscribe(
+      (data) => {
+        this.apiData = data;
+        console.log('Datos obtenidos de la API:', data);
+      },
+      (error) => {
+        console.error('Error al acceder a la API:', error);
+      }
+    );
+  }
+  mostrarGeolocalizacion() {
+    this.geolocation.getCurrentPosition().then(
+      (resp) => {
+        this.geolocalizacion = {
+          lat: resp.coords.latitude,
+          lng: resp.coords.longitude,
+        };
+        console.log('Geolocalización obtenida:', this.geolocalizacion);
+      },
+      (error) => {
+        console.error('Error al obtener la geolocalización:', error);
+      }
+    );
   }
 }

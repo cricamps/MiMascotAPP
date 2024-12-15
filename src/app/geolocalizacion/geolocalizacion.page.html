@@ -1,0 +1,14 @@
+<ion-header>
+    <ion-toolbar>
+      <ion-title>Geolocalización</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content>
+    <ion-button (click)="obtenerGeolocalizacion()">Mostrar Geolocalización</ion-button>
+    <div *ngIf="geolocalizacion">
+      <p>Latitud: {{ geolocalizacion.lat }}</p>
+      <p>Longitud: {{ geolocalizacion.lng }}</p>
+    </div>
+  </ion-content>
+  
