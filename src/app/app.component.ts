@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { SqliteService } from './services/sqlite.service'; // Importa el servicio SQLite
+import { SqliteService } from './services/sqlite.service';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +10,7 @@ import { SqliteService } from './services/sqlite.service'; // Importa el servici
 export class AppComponent {
   constructor(
     private translate: TranslateService,
-    private sqliteService: SqliteService // Inyecta el servicio SQLite
+    private sqliteService: SqliteService
   ) {
     this.initializeApp();
   }

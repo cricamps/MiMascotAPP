@@ -172,4 +172,9 @@ export class SqliteService {
       throw error;
     }
   }
+  async isLoggedIn(): Promise<boolean> {
+    const users = await this.getAllUsers();
+    return users.length > 0;
+  }
+  
 }
